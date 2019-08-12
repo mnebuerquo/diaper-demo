@@ -1,0 +1,25 @@
+.servererror img {
+	width: 100%;
+}
+
+.error, .servererror {
+	border: 2px outset;
+	margin: 2px;
+	background-color: #CCC;
+	overflow: hidden;
+}
+
+.error {
+	background-color: #FCC;
+}
+
+.content div {
+	/*margin-left: 4px;*/
+	border-left: 4px outset blue;
+	padding-left: 4px;
+}
+
+.footer {
+	color: blue;
+	background-color: white;
+}

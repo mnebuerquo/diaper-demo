@@ -1,0 +1,24 @@
+#!/bin/sh
+
+REGISTRY="${DOCKER_LOCAL_REGISTRY}"
+IMAGE="node:10"
+FULL="${REGISTRY}${IMAGE}"
+
+if [ -z "${INSIDEPORT}" ]; then
+	INSIDEPORT=8080
+fi
+if [ -z "${PORT}" ] ; then
+	PORTSTR=
+else
+	PORTSTR="-p ${PORT}:${INSIDEPORT}"
+fi
+
+WORKDIR="/app"
+docker run \
+	--user "node" \
+	-it \
+	${PORTSTR} \
+	--rm \
+	-w "${WORKDIR}" \
+	-v "$(pwd):${WORKDIR}" \
+	"${FULL}" "$@"
