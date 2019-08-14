@@ -5,17 +5,6 @@ export const layout = {
     { component: "BadConstructor"},
     { component: "Foo"},
     { component: "PText", props: {text: "this is text in a p"}},
-    { component: "TopLevel",
-      children: [
-        {
-          component: "MidLevel",
-          children: [
-            { component: "LowestLevel"},
-            { component: "dumbComponent"},
-            { component: "connectedComponent"},
-          ],
-        },
-      ]},
     { component: "Clock"},
     { component: "TopLevel",
       children: [
@@ -23,12 +12,13 @@ export const layout = {
         {
           component: "MidLevel",
           children: [
-            { component: "LowestLevel"},
             { component: "BadConstructor"},
+            { component: "LowestLevel"},
             { component: "connectedComponent"},
           ],
         },
       ]},
+    { component: "PText", props: {text: "This should be the end."}},
   ] }
 
 export const simple = {

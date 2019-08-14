@@ -1,3 +1,7 @@
+body {
+	font-size: 180%;
+}
+
 .servererror img {
 	width: 100%;
 }
@@ -14,9 +18,8 @@
 }
 
 .content div {
-	/*margin-left: 4px;*/
-	border-left: 4px outset blue;
-	padding-left: 4px;
+	border-left: 8px outset blue;
+	padding-left: 8px;
 }
 
 .footer {

@@ -1,8 +1,6 @@
 # Diaper Your Children
 ## Cleaning Up After Messy React Components
 
-(image of babies crying)
-
 ---
 
 # Once upon a time...
@@ -60,7 +58,9 @@ How nervous are you feeling right now?
 
 ---
 
-# Let's find a better way
+# Someone's Component Threw an Exception
+
+You see the White Screen of Death.
 
 What do we want to accomplish when something breaks down?
 
@@ -70,11 +70,11 @@ What do we want to accomplish when something breaks down?
 
 2. Call for help.
 
-3. Show something to the user.
+3. Show something helpful to the user.
 
 ---
 
-# Ok, let's solve the problem! Yeah!
+# Ok, let's solve the problem!
 
 No problem. I've heard of a React 16 feature for this!
 
@@ -102,7 +102,7 @@ We're doing server-side rendering.
 
 --
 
-Why SSR?
+Why do we do SSR?
 
 --
 
@@ -201,10 +201,12 @@ The exception isn't caught. What happened?
 # React is Declarative, not Imperative
 
 Your render function tells React what needs to happen, and then
-React does the work. The try/catch happens in a step before the child
+React does the work.
+
+The try/catch happens in a step before the child
 components get rendered.
 
-That's done asynchronously in a separate stack.
+The render is done asynchronously in a separate stack.
 
 ---
 
@@ -227,8 +229,9 @@ render() {
 
 --
 
-Nope. Now my render is returning a string of HTML instead of a node. React
-will add my raw HTML as a text element containing HTML, not as React elements.
+Nope. Now my render is returning a string of HTML instead of a node.
+
+React will add my raw HTML as a text element containing HTML, not as React elements.
 
 ---
 
@@ -303,17 +306,13 @@ How do we figure out what contexts are active for any component?
 
 ---
 
-# First Context Attempt
+# Providing the Providers
 
-Let's try consuming all the contexts and re-providing them.
-
---
-
-Spend hours trying to figure out a way to get a list of contexts...
-
---
+We don't know how to find all active contexts.
 
 Let's just re-provide the contexts we know about.
+
+--
 
 ```
 const ProvideAllContexts = (props) => (
@@ -321,6 +320,7 @@ const ProvideAllContexts = (props) => (
     {props.children}
   </Provider>
 )
+
 render() {
   try {
     const html = renderToString(<div>
@@ -341,6 +341,89 @@ That works better.
 
 ---
 
+# A Little More Context
+
+Now we have a component which wants to create a new context!
+
+We're blocking contexts on the server-side.
+
+Remember this:
+
+```
+const ProvideAllContexts = (props) => (
+  <Provider store={store}>
+    {props.children}
+  </Provider>
+)
+```
+
+--
+
+We would have to include the context and its value in the
+`ProvideAllContexts` function.
+
+---
+
+# Bucket Brigade
+
+In each Diaper, we need to make sure to provide all the contexts we know.
+
+1. Consume all contexts to get the values
+2. Inside the `renderToString`, re-provide all the contexts
+
+--
+
+The problem is knowing what contexts are active.
+
+React does not store a list of contexts.
+
+---
+
+# One Context to Rule Them All
+
+Let's monkey-patch React!
+
+Shim around `React.createContext` to capture all the contexts in a list.
+
+```
+const { createContext } = React
+React.createContext = function() {
+  const Context = createContext.apply(this, arguments)
+  contexts.push(Context)
+  return Context
+}
+```
+
+This solves the problem for components which use a context internally without
+exposing it.
+
+--
+
+Unfortunately, the shim must be installed before anything creates a context.
+
+Module load order is an issue now.
+
+---
+
+# You're not on the list.
+
+Let's expose an `addContext` method in Diaper.
+
+User code creates context, registers it, then it gets re-created in each
+layer.
+
+--
+
+What's the problem?
+
+--
+
+It's a trap!
+
+And we don't have a better way.
+
+---
+
 # What happens with errors?
 
 We're rendering the page, what happens when one component fails?
@@ -355,7 +438,7 @@ Replaced with `FallbackContent` and sent to the browser, HTML only.
 
 ---
 
-# Zombie Nodes
+# Attack of the Zombie Nodes
 
 A zombie is a node which is rendered into the HTML, but does not map to a React
 component in the Virtual DOM. React will never re-render this node, and will
@@ -372,7 +455,14 @@ You can get a zombie node by following these steps:
 
 --
 
-After step 2, you will notice an extra instance of the modified child.
+After step 2, you will notice some nodes are duplicated.
+
+The Zombies are the nodes following the node rendered differently by the
+client.
+
+Zombies appear first in the DOM, and will not be updated.
+
+---
 
 # Fighting the Zombie Apocalypse
 
@@ -384,16 +474,28 @@ server-side rendering, you create the conditions for a zombie node.
 My observations:
 
 * If there is only one child, React can figure out to replace it.
-* If there are some more unique classes added to each child, React can figure
-  out which is which.
+* If there are some more unique classes added to each child, React has a better
+  chance of figuring it out.
 * Sometimes React will merge content from two different divs into one, because
   it thinks they are the same structure.
 * There is some content about this in the React docs for `hydrate` and an issue
   in Github for react as well. These have a lot of helpful info.
 
+---
+
+# Get a Chainsaw Hand
+
+Let's prevent Zombies taking over our pages.
+
+1. Give the Diapers some semi-unique names.
+2. Dispatch an action when an error is caught.
+3. Pass an initial state to the client.
+4. Render identical content in SSR and first client-side render.
+5. Re-try the render in a second pass and catch the error.
+
 --
 
-Set some state to tell it to re-render the broken components in a second pass.
+Apocalypse averted!
 
 ---
 
@@ -426,83 +528,7 @@ Remember our requirements from earlier:
 2. Call for help.
 3. Show something to the user.
 
-Now we have a working component!
-
----
-
-# A Little More Context
-
-Now we have a component which wants to create a new context!
-
-We're blocking contexts on the server-side.
-
-Remember this:
-
-```
-const ProvideAllContexts = (props) => (
-  <Provider store={store}>
-    {props.children}
-  </Provider>
-)
-```
-
---
-
-We would have to include the context and its value in the
-`ProvideAllContexts` function.
-
----
-
-# Adding More Contexts
-
-In each Diaper, we need to make sure to provide all the contexts we know.
-
-1. Consume all contexts to get the values
-2. Inside the `renderToString`, re-provide all the contexts
-
---
-
-The problem is knowing what contexts are active.
-
-React does not store a list of contexts.
-
----
-
-# One Context to Rule Them All
-
-Attempt #1: Monkey-patch React:
-
-Shim around `React.createContext` to capture all the contexts in a list.
-
-```
-const { createContext } = React
-React.createContext = function() {
-  const Context = createContext.apply(this, arguments)
-  contexts.push(Context)
-  return Context
-}
-```
-
-This solves the problem for components which use a context internally without
-exposing it.
-
---
-
-Problem: The shim must be installed before anything calls the function. Module
-load order is an issue now.
-
----
-
-# You're not on the list.
-
-Attempt #2: Expose addContext method in Diaper.
-
-User code creates context, registers it, then it gets re-created in each
-layer.
-
---
-
-Problem: Users don't know to do this, so it's a trap.
+Now we have a working Diaper component!
 
 ---
 
@@ -522,8 +548,14 @@ Error Boundaries in Server-Side Rendering are difficult.
 
 Recommended:
 * Render the most static parts of the page server-side. Header, footer, menus.
-* Defer the more dynamic content to client-side render.
+* If possible, defer the more dynamic content to client-side render.
 * Wrap all dynamic content in error boundaries to prevent the
   white-screen-of-death.
 * Don't try to do fine-grained error boundaries on server-side without good
   context handling.
+
+---
+
+# Thanks!
+
+Thank you all for coming!

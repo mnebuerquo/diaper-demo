@@ -12,6 +12,7 @@ export const addContext = (c) => contexts.push(c)
 //
 // This would work great, but other modules call the function before the shim
 // is installed. So this doesn't actually work great.
+// See: https://github.com/zekchan/react-ssr-error-boundary/blob/master/src/server.js#L20
 export const shimCreateContext = () => {
   if (!shimInstalled) {
     const { createContext } = React
@@ -30,6 +31,7 @@ const arrayOrNothing = x => Array.isArray(x) ? x : []
 // wrap render function with all context consumers to get the values
 // then we pass those values to the context provider function below to
 // provide them to the components inside the diaper
+// Inspired by: https://github.com/zekchan/react-ssr-error-boundary/blob/master/src/server.js#L73
 export const consumeAllContextValues = (componentFn) => contexts.reduce(
   (fn, Context) =>
     (values) => (<Context.Consumer>{
@@ -41,6 +43,7 @@ export const consumeAllContextValues = (componentFn) => contexts.reduce(
 // then reduce contexts to a stack of providers around element
 // each one wraps the ones below
 // element is a rendered react element
+// Inspired by: https://github.com/zekchan/react-ssr-error-boundary/blob/master/src/server.js#L95
 export const provideAllContexts = (Component, values) =>
   contexts
     .map((ctx, i) => [ctx, values[i]])

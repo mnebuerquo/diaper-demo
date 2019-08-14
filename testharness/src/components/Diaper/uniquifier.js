@@ -3,7 +3,8 @@ import {createContext} from 'react'
 import {addContext} from './contextWrapper'
 
 const Uniq = createContext([])
-addContext(Uniq)
+
+addContext(Uniq) // to allow the context to pass through the diaper
 
 export const Uniquifier = ({componentName='u', ...restProps}) => (
   <Uniq.Consumer>

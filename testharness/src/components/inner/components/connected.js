@@ -3,9 +3,9 @@ import {connect} from 'react-redux'
 
 export const dumbComponent = (props) => (
   <div>
-    <p>
-      {props.hasRedux && 'This component is connected!' || 'This component is not connected.'}
-    </p>
+    <h3>
+      {props.hasRedux && 'This component is Redux connected!' || 'This component is not connected.'}
+    </h3>
     <p>
       {props.reduxString}
     </p>
