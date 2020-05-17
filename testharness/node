@@ -4,9 +4,18 @@ REGISTRY="${DOCKER_LOCAL_REGISTRY}"
 IMAGE="node:10"
 FULL="${REGISTRY}${IMAGE}"
 
-if [ -z "${INSIDEPORT}" ]; then
-	INSIDEPORT=8080
+if [ -z "${PORT}" ]; then
+	PORTENV=""
+else
+	PORTENV="-e PORT=${PORT}"
 fi
+
+if [ -z "${INSIDEPORT}" ]; then
+	INSIDEPORT="${PORT}"
+else
+	PORTENV="-e PORT=${INSIDEPORT}"
+fi
+
 if [ -z "${PORT}" ] ; then
 	PORTSTR=
 else
@@ -18,6 +27,7 @@ docker run \
 	--user "node" \
 	-it \
 	${PORTSTR} \
+	${PORTENV} \
 	--rm \
 	-w "${WORKDIR}" \
 	-v "$(pwd):${WORKDIR}" \
