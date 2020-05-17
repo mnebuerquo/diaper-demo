@@ -5,7 +5,6 @@ import * as ssr from './ssr'
 
 export const getDiaper = (isSSR, whichDiaper) => isSSR ? ssr[whichDiaper] : browser[whichDiaper]
 
-const Nothing = () => {}
 export const withDiaper =
   (isSSR, whichDiaper, fallback, componentName, Providers, WrappedComponent) => {
     const Diaper = getDiaper(isSSR, whichDiaper)
