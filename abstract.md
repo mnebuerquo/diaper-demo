@@ -12,7 +12,7 @@ Basic understanding of React lifecycle methods is recommended for the audience,
 but the challenges and journey will be presented in a way to be accessible for
 anyone.
 
-Come and join us for a humorous story of a team taking back their website from
+Come and enjoy a humorous tale of a team taking back their website from
 unpredictable errors and malformed data.
 
 
