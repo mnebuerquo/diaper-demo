@@ -1,4 +1,5 @@
 # Diaper Your Children: Cleaning Up After Messy React Components
+# Diaper Your Children: Preventing Accidents with React Components
 
 ## Abstract
 

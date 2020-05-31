@@ -1,10 +1,8 @@
 # Bio: Sherman Adelson
 
-"Oooh! Something shiny!" I'm fascinated by everything. I've written code for a
-wide variety of applications over the past 20 years, including native Windows
-apps, industrial process control, websites, native mobile apps, games, 3D
-graphics, machine learning, and more. I want to learn and try everything.
-There are too few hours in the day.
+"Oooh! Something shiny!" From native Windows apps to industrial process control,
+native mobile apps and websites, it's all totally fascinating. I want to learn
+and try everything. There are too few hours in the day.
 
 I love startups. I've never gotten rich from one, but it's amazing how much you
 learn from running around on fire.
